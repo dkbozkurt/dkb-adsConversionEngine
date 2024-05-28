@@ -1,0 +1,16 @@
+{
+  "name": "dkb-adsconversionengine",
+  "version": "1.0.0",
+  "description": "Ads Conversion Engine",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel ./*.html",
+    "build": "parcel build ./*.html"
+  },
+  "keywords": [],
+  "author": "Dogukan Kaan Bozkurt",
+  "license": "ISC",
+  "devDependencies": {
+    "parcel": "^2.12.0"
+  }
+}

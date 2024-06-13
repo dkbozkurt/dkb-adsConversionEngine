@@ -16,5 +16,8 @@
     "engine"
   ],
   "author": "Dogukan Kaan Bozkurt",
-  "license": "SEE LICENSE IN LICENSE.md"
+  "license": "SEE LICENSE IN LICENSE.md",
+  "dependencies": {
+    "html-minifier": "^4.0.0"
+  }
 }

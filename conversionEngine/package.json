@@ -9,8 +9,8 @@
         "base64-to-glb": "node modelConverter/base64ToGlb.js",
         "texture-to-base64": "node textureConverter/textureToBase64.js",
         "base64-to-texture": "node textureConverter/base64ToTexture.js",
-        "mp3-to-base64": "node soundConverter/mp3ToBase64.js",
-        "base64-to-mp3": "node soundConverter/base64ToMp3.js"
+        "sound-to-base64": "node soundConverter/soundToBase64.js",
+        "base64-to-sound": "node soundConverter/base64ToSound.js"
     },
     "repository": {
         "type": "git",

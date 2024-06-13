@@ -3,7 +3,7 @@ const path = require('path');
 
 // Paths to input and output directories
 const inputDir = path.join(__dirname, 'input_base64');
-const outputDir = path.join(__dirname, 'output_mp3');
+const outputDir = path.join(__dirname, 'output_sounds');
 
 // Ensure the output directory exists
 if (!fs.existsSync(outputDir)) {
@@ -33,8 +33,23 @@ fs.readdir(inputDir, (err, files) => {
 
     txtFiles.forEach(file => {
         const inputFilePath = path.join(inputDir, file);
-        const baseName = path.basename(file, path.extname(file));
-        const outputFilePath = generateUniqueFileName(baseName, '.mp3');
+        const baseNameWithPrefix = path.basename(file, path.extname(file));
+        let extension = '';
+        let baseName = '';
+
+        // Determine file extension and base name based on prefix
+        if (baseNameWithPrefix.startsWith('w_')) {
+            extension = '.wav';
+            baseName = baseNameWithPrefix.slice(2); // Remove the prefix 'w_'
+        } else if (baseNameWithPrefix.startsWith('m_')) {
+            extension = '.mp3';
+            baseName = baseNameWithPrefix.slice(2); // Remove the prefix 'm_'
+        } else {
+            console.warn(`Skipping file ${file} due to unrecognized prefix`);
+            return;
+        }
+
+        const outputFilePath = generateUniqueFileName(baseName, extension);
 
         // Read the base64 file
         fs.readFile(inputFilePath, 'utf8', (err, data) => {
@@ -46,13 +61,13 @@ fs.readdir(inputDir, (err, files) => {
             // Convert base64 to binary
             const buffer = Buffer.from(data, 'base64');
 
-            // Write the binary data to an .mp3 file
+            // Write the binary data to a sound file
             fs.writeFile(outputFilePath, buffer, (err) => {
                 if (err) {
-                    console.error(`Error writing .mp3 file ${outputFilePath}:`, err);
+                    console.error(`Error writing sound file ${outputFilePath}:`, err);
                     return;
                 }
-                console.log(`Converted ${file} to .mp3 and saved to: ${outputFilePath}`);
+                console.log(`Converted ${file} to ${extension} and saved to: ${outputFilePath}`);
             });
         });
     });

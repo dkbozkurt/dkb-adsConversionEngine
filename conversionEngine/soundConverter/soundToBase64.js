@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Paths to input and output directories
-const inputDir = path.join(__dirname, 'input_mp3');
+const inputDir = path.join(__dirname, 'input_sounds');
 const outputDir = path.join(__dirname, 'output_base64');
 
 // Ensure the output directory exists
@@ -11,11 +11,11 @@ if (!fs.existsSync(outputDir)) {
 }
 
 // Helper function to generate a unique file name
-const generateUniqueFileName = (baseName, extension) => {
-    let outputFilePath = path.join(outputDir, `${baseName}${extension}`);
+const generateUniqueFileName = (baseName, prefix, extension) => {
+    let outputFilePath = path.join(outputDir, `${prefix}${baseName}${extension}`);
     let counter = 1;
     while (fs.existsSync(outputFilePath)) {
-        outputFilePath = path.join(outputDir, `${baseName}(${counter})${extension}`);
+        outputFilePath = path.join(outputDir, `${prefix}${baseName}(${counter})${extension}`);
         counter++;
     }
     return outputFilePath;
@@ -28,18 +28,28 @@ fs.readdir(inputDir, (err, files) => {
         return;
     }
 
-    // Filter for .mp3 files
-    const mp3Files = files.filter(file => path.extname(file).toLowerCase() === '.mp3');
+    // Filter for .mp3 and .wav files
+    const soundFiles = files.filter(file => ['.mp3', '.wav'].includes(path.extname(file).toLowerCase()));
 
-    mp3Files.forEach(file => {
+    soundFiles.forEach(file => {
         const inputFilePath = path.join(inputDir, file);
         const baseName = path.basename(file, path.extname(file));
-        const outputFilePath = generateUniqueFileName(baseName, '.txt');
+        const extension = path.extname(file).toLowerCase();
+        let prefix = '';
 
-        // Read the .mp3 file
+        // Determine prefix based on file extension
+        if (extension === '.wav') {
+            prefix = 'w_';
+        } else if (extension === '.mp3') {
+            prefix = 'm_';
+        }
+
+        const outputFilePath = generateUniqueFileName(baseName, prefix, '.txt');
+
+        // Read the sound file
         fs.readFile(inputFilePath, (err, data) => {
             if (err) {
-                console.error(`Error reading .mp3 file ${file}:`, err);
+                console.error(`Error reading sound file ${file}:`, err);
                 return;
             }
 

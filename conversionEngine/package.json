@@ -5,12 +5,12 @@
     "main": "feMerge/feMerge.js",
     "scripts": {
         "merge-html": "node feMerge/feMerge.js",
-        "glb-to-base64": "node assetConverter/glbToBase64.js",
-        "base64-to-glb": "node assetConverter/base64ToGlb.js"
+        "glb-to-base64": "node modelConverter/glbToBase64.js",
+        "base64-to-glb": "node modelConverter/base64ToGlb.js"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/dkbozkurt/dkb-adsConversionEngine.git"
+        "url": "https://github.com/dkbozkurt/dkb-adsConversionEngine.git"
     },
     "keywords": [
         "merge",

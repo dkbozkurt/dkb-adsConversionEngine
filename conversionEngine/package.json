@@ -1,7 +1,7 @@
 {
     "name": "dkb-ads-conversion-engine",
     "version": "0.1.0",
-    "description": "Ads Conversion Engine",
+    "description": "Tools to merge HTML, CSS, and JS into a single file and convert GLB files to/from base64 encoding",
     "main": "feMerge/feMerge.js",
     "scripts": {
         "merge-html": "node feMerge/feMerge.js",

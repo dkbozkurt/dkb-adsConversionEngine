@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 // Paths to input and output directories
-const inputDir = path.join(__dirname, 'input');
-const outputDir = path.join(__dirname, 'output');
+const inputDir = path.join(__dirname, 'input_glb');
+const outputDir = path.join(__dirname, 'output_base64');
 
 // Ensure the output directory exists
 if (!fs.existsSync(outputDir)) {

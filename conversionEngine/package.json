@@ -1,23 +1,26 @@
 {
-  "name": "dkb-ads-conversion-engine",
-  "version": "0.1.0",
-  "description": "Ads Conversion Engine",
-  "main": "index.js",
-  "scripts": {
-    "dev": "node index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dkbozkurt/dkb-adsConversionEngine.git"
-  },
-  "keywords": [
-    "ads",
-    "conversion",
-    "engine"
-  ],
-  "author": "Dogukan Kaan Bozkurt",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "dependencies": {
-    "html-minifier": "^4.0.0"
-  }
+    "name": "dkb-ads-conversion-engine",
+    "version": "0.1.0",
+    "description": "Ads Conversion Engine",
+    "main": "feMerge/feMerge.js",
+    "scripts": {
+        "merge-html": "node feMerge/feMerge.js",
+        "glb-to-base64": "node assetConverter/glbToBase64.js",
+        "base64-to-glb": "node assetConverter/base64ToGlb.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/dkbozkurt/dkb-adsConversionEngine.git"
+    },
+    "keywords": [
+        "merge",
+        "ads",
+        "conversion",
+        "engine"
+    ],
+    "author": "Dogukan Kaan Bozkurt",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "dependencies": {
+        "html-minifier": "^4.0.0"
+    }
 }

@@ -12,7 +12,9 @@
         "sound-to-base64": "node soundConverter/soundToBase64.js",
         "base64-to-sound": "node soundConverter/base64ToSound.js",
         "video-to-base64": "node videoConverter/videoToBase64.js",
-        "base64-to-video": "node videoConverter/base64ToVideo.js"
+        "base64-to-video": "node videoConverter/base64ToVideo.js",
+        "font-to-base64": "node fontConverter/fontToBase64.js",
+        "base64-to-font": "node fontConverter/base64ToFont.js"
     },
     "repository": {
         "type": "git",

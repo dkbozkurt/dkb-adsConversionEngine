@@ -6,7 +6,9 @@
     "scripts": {
         "merge-html": "node feMerge/feMerge.js",
         "glb-to-base64": "node modelConverter/glbToBase64.js",
-        "base64-to-glb": "node modelConverter/base64ToGlb.js"
+        "base64-to-glb": "node modelConverter/base64ToGlb.js",
+        "texture-to-base64": "node textureConverter/textureToBase64.js",
+        "base64-to-texture": "node textureConverter/base64ToTexture.js"
     },
     "repository": {
         "type": "git",

@@ -10,7 +10,9 @@
         "texture-to-base64": "node textureConverter/textureToBase64.js",
         "base64-to-texture": "node textureConverter/base64ToTexture.js",
         "sound-to-base64": "node soundConverter/soundToBase64.js",
-        "base64-to-sound": "node soundConverter/base64ToSound.js"
+        "base64-to-sound": "node soundConverter/base64ToSound.js",
+        "video-to-base64": "node videoConverter/videoToBase64.js",
+        "base64-to-video": "node videoConverter/base64ToVideo.js"
     },
     "repository": {
         "type": "git",

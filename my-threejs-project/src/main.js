@@ -1,40 +1,159 @@
-import * as THREE from 'three';
+import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import GUI from 'lil-gui'
+import * as CANNON from 'cannon-es'
+import nxImage from './assets/textures/nx.png'
+import audio from './assets/audio.mp3'
+/**
+ * Debug
+ */
+const gui = new GUI()
+const debugObject = {};
 
-import matcapImage from './assets/8.png';
-import fox from './assets/Fox.glb';
+debugObject.createSphere = () => {
+    createSphere(
+        Math.random() * 0.5,
+        {
+            x: (Math.random() - 0.5) * 3,
+            y: 3,
+            z: (Math.random() - 0.5) * 3
+        }
+    )
+}
+debugObject.createBox = () => {
+    createBox(
+        Math.random(),
+        Math.random(),
+        Math.random(),
+        {
+            x: (Math.random() - 0.5) * 3,
+            y: 3,
+            z: (Math.random() - 0.5) * 3
+        }
+    )
+}
 
+debugObject.reset = () => {
+    for (const object of objectsToUpdate) {
+        // Remove body
+        object.body.removeEventListener('collide',playHitSound);
+        world.removeBody(object.body);
+
+        // Remove mesh
+        scene.remove(object.mesh)
+    }
+
+    // ! Empty the Array
+    objectsToUpdate.splice(0, objectsToUpdate.length);
+}
+
+gui.add(debugObject, 'createSphere')
+gui.add(debugObject, 'createBox')
+gui.add(debugObject, 'reset')
+
+/**
+ * Base
+ */
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
 
+// Sounds
+const hitSound = new Audio(audio);
+
+const playHitSound = (collision) => {
+
+    const impactStrength = collision.contact.getImpactVelocityAlongNormal();
+
+    if (impactStrength > 1.5) {
+        hitSound.volume = Math.random();
+        hitSound.currentTime = 0
+        hitSound.play()
+    }
+
+}
+
 /**
  * Textures
  */
 const textureLoader = new THREE.TextureLoader()
-const matcapTexture = textureLoader.load(matcapImage)
-matcapTexture.colorSpace = THREE.SRGBColorSpace
+const cubeTextureLoader = new THREE.CubeTextureLoader()
 
-const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
-const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 32, 64)
+const environmentMapTexture = cubeTextureLoader.load([
+    nxImage,nxImage,nxImage,nxImage,nxImage,nxImage
+])
 
-        for(let i = 0; i < 100; i++)
-        {
-            const donut = new THREE.Mesh(donutGeometry, material)
-            donut.position.x = (Math.random() - 0.5) * 10
-            donut.position.y = (Math.random() - 0.5) * 10
-            donut.position.z = (Math.random() - 0.5) * 10
-            donut.rotation.x = Math.random() * Math.PI
-            donut.rotation.y = Math.random() * Math.PI
-            const scale = Math.random()
-            donut.scale.set(scale, scale, scale)
+// Physics
+const world = new CANNON.World();
+// ! Very important for performance
+world.broadphase = new CANNON.SAPBroadphase(world);
+world.allowSleep = true;
+world.gravity.set(0, -9.82, 0);
 
-            scene.add(donut)
-        }
+// Materials
+const defaultMaterial = new CANNON.Material('default');
 
+const defaultContactMaterial = new CANNON.ContactMaterial(
+    defaultMaterial,
+    defaultMaterial,
+    {
+        friction: 0.1,
+        restitution: 0.7
+    }
+)
+world.addContactMaterial(defaultContactMaterial);
+
+// ! Remove material props from the object bodys and give a single material onto world
+// world.defaultContactMaterial = defaultContactMaterial;
+
+// Floor
+const floorShape = new CANNON.Plane();
+const floorBody = new CANNON.Body();
+
+floorBody.mass = 0;
+floorBody.addShape(floorShape);
+floorBody.material = defaultMaterial;
+
+// ! In Cannon js you can only use quaternion for rotations!
+floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), - Math.PI * 0.5)
+world.addBody(floorBody);
+
+
+/**
+ * Floor
+ */
+const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(10, 10),
+    new THREE.MeshStandardMaterial({
+        color: '#777777',
+        metalness: 0.3,
+        roughness: 0.4,
+        envMap: environmentMapTexture,
+        envMapIntensity: 0.5
+    })
+)
+floor.receiveShadow = true
+floor.rotation.x = - Math.PI * 0.5
+scene.add(floor)
+
+/**
+ * Lights
+ */
+const ambientLight = new THREE.AmbientLight(0xffffff, 2.1)
+scene.add(ambientLight)
+
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6)
+directionalLight.castShadow = true
+directionalLight.shadow.mapSize.set(1024, 1024)
+directionalLight.shadow.camera.far = 15
+directionalLight.shadow.camera.left = - 7
+directionalLight.shadow.camera.top = 7
+directionalLight.shadow.camera.right = 7
+directionalLight.shadow.camera.bottom = - 7
+directionalLight.position.set(5, 5, 5)
+scene.add(directionalLight)
 
 /**
  * Sizes
@@ -44,8 +163,7 @@ const sizes = {
     height: window.innerHeight
 }
 
-window.addEventListener('resize', () =>
-{
+window.addEventListener('resize', () => {
     // Update sizes
     sizes.width = window.innerWidth
     sizes.height = window.innerHeight
@@ -64,70 +182,11 @@ window.addEventListener('resize', () =>
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.x = 1
-camera.position.y = 1
-camera.position.z = 2
+camera.position.set(- 3, 3, 3)
 scene.add(camera)
-
-
-const gltfLoader = new GLTFLoader();
-// Animations
-let mixer = null;
-gltfLoader.load(
-    fox,
-    (gltf) => {
-        mixer = new THREE.AnimationMixer(gltf.scene);
-        const action = mixer.clipAction(gltf.animations[1]);
-        action.play();
-
-        // Fixing scale problems
-        gltf.scene.scale.set(0.025, 0.025, 0.025);
-
-        gltf.scene.traverse((child) => {
-            if (child.isMesh) {
-                child.castShadow = true; // Ensure the model and its children cast shadows
-            }
-        });
-
-        scene.add(gltf.scene);
-    }
-);
-
-/**
- * Floor
- */
-const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(10, 10),
-    new THREE.MeshStandardMaterial({
-        color: '#444444',
-        metalness: 0,
-        roughness: 0.5
-    })
-)
-floor.receiveShadow = true
-floor.rotation.x = - Math.PI * 0.5
-scene.add(floor)
-
-/**
- * Lights
- */
-const ambientLight = new THREE.AmbientLight('#b9d5ff', 0.12)
-scene.add(ambientLight)
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
-directionalLight.castShadow = true
-directionalLight.shadow.mapSize.set(1024, 1024)
-directionalLight.shadow.camera.far = 15
-directionalLight.shadow.camera.left = - 7
-directionalLight.shadow.camera.top = 7
-directionalLight.shadow.camera.right = 7
-directionalLight.shadow.camera.bottom = - 7
-directionalLight.position.set(5, 5, 5)
-scene.add(directionalLight)
 
 // Controls
 const controls = new OrbitControls(camera, canvas)
-controls.target.set(0, 0.75, 0)
 controls.enableDamping = true
 
 /**
@@ -136,28 +195,113 @@ controls.enableDamping = true
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
 })
-renderer.setSize(sizes.width, sizes.height)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.shadowMap.enabled = true
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
+renderer.setSize(sizes.width, sizes.height)
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
+// Utils
+const objectsToUpdate = [];
 
+// Sphere
+const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
+const sphereMaterial = new THREE.MeshStandardMaterial({
+    metalness: 0.3,
+    roughness: 0.4,
+    envMap: environmentMapTexture
+});
+
+const createSphere = (radius, position) => {
+    // Three js mesh
+    const mesh = new THREE.Mesh(
+        sphereGeometry,
+        sphereMaterial
+    );
+    mesh.scale.set(radius, radius, radius);
+    mesh.castShadow = true;
+    mesh.position.copy(position);
+    scene.add(mesh);
+
+    // Cannon.js body
+    const shape = new CANNON.Sphere(radius);
+
+    const body = new CANNON.Body({
+        mass: 1,
+        shape: shape,
+        material: defaultMaterial,
+        position: new CANNON.Vec3(0, 3, 0)
+    });
+    body.position.copy(position);
+    body.addEventListener('collide', playHitSound);
+    world.addBody(body);
+
+    objectsToUpdate.push({
+        mesh,
+        body
+    })
+}
+
+createSphere(0.5, { x: 0, y: 3, z: 0 });
+
+// Box
+const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+const boxMaterial = new THREE.MeshStandardMaterial({
+    metalness: 0.3,
+    roughness: 0.4,
+    envMap: environmentMapTexture
+});
+
+const createBox = (width, height, depth, position) => {
+    // Three js mesh
+    const mesh = new THREE.Mesh(
+        boxGeometry,
+        boxMaterial
+    );
+    mesh.scale.set(width, height, depth);
+    mesh.castShadow = true;
+    mesh.position.copy(position);
+    scene.add(mesh);
+
+    // Cannon.js body
+    // ! For CANNON it scales from center so we gotta divide w h d by 2
+    const shape = new CANNON.Box(new CANNON.Vec3(width / 2, height / 2, depth / 2));
+
+    const body = new CANNON.Body({
+        mass: 1,
+        shape: shape,
+        material: defaultMaterial,
+        position: new CANNON.Vec3(0, 3, 0)
+    });
+    body.position.copy(position);
+    body.addEventListener('collide', playHitSound);
+    world.addBody(body);
+
+    objectsToUpdate.push({
+        mesh,
+        body
+    })
+}
 /**
  * Animate
  */
 const clock = new THREE.Clock()
-let previousTime = 0
+let oldElapsedTime = 0;
 
 const tick = () => {
     const elapsedTime = clock.getElapsedTime()
-    const deltaTime = elapsedTime - previousTime
-    previousTime = elapsedTime
+    const deltaTime = elapsedTime - oldElapsedTime;
+    oldElapsedTime = elapsedTime;
 
-    // Update Mixer
-    if (mixer !== null) {
-        mixer.update(deltaTime)
+    // Update physics world
+
+    // ! IMPORTANT
+    world.step(1 / 60, deltaTime, 3);
+    // console.log(sphereBody.position.y);
+
+    for (const object of objectsToUpdate) {
+        object.mesh.position.copy(object.body.position)
+        object.mesh.quaternion.copy(object.body.quaternion)
     }
-
 
     // Update controls
     controls.update()

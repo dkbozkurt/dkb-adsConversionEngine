@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { viteSingleFile } from "vite-plugin-singlefile"
 
 export default defineConfig({
-  plugins: [viteSingleFile()],
+  plugins: [viteSingleFile({ removeViteModuleLoader: true })],
   build: {
     rollupOptions: {
       input: 'index.html',
@@ -10,4 +10,5 @@ export default defineConfig({
     target: 'esnext',
     inlineDynamicImports: true,
   },
+  assetsInclude: ['**/*.glb'],
 });

@@ -1,5 +1,7 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import myImage from './assets/my-image.png';
+import modelPath from './assets/model.glb';
 
 // Create a scene
 const scene = new THREE.Scene();
@@ -23,8 +25,20 @@ const material = new THREE.MeshBasicMaterial({ map: texture });
 const cube = new THREE.Mesh(geometry, material);
 scene.add(cube);
 
+const light = new THREE.AmbientLight( 0x404040,3 ); // soft white light
+scene.add( light );
+
 // Position the camera
 camera.position.z = 5;
+
+// Load the GLB model
+const loader = new GLTFLoader();
+loader.load(modelPath, (gltf) => {
+  const model = gltf.scene;
+  model.position.set(0, 1, 0);
+  model.scale.set(0.1,0.1,0.1); // Set model position
+  scene.add(model);
+});
 
 // Animation loop
 function animate() {

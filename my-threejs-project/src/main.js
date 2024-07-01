@@ -1,6 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
 import matcapImage from './assets/8.png';
+import duck from './assets/Duck.glb';
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -31,8 +34,19 @@ const donutGeometry = new THREE.TorusGeometry(0.3, 0.2, 32, 64)
 
             scene.add(donut)
         }
+
 /**
- * Fonts
+ * GLTF
+ */
+
+const gltfLoader = new GLTFLoader();
+
+gltfLoader.load(
+    duck,
+    (gltf) => {
+        scene.add(gltf.scene.children[0]);
+    }
+)
 
 /**
  * Sizes
@@ -66,6 +80,12 @@ camera.position.x = 1
 camera.position.y = 1
 camera.position.z = 2
 scene.add(camera)
+
+/**
+ * Lights
+ */
+const directionalLight = new THREE.DirectionalLight( 0xffffff, 3 );
+scene.add( directionalLight );
 
 // Controls
 const controls = new OrbitControls(camera, canvas)

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import myImage from './assets/my-image.png';
 import modelPath from './assets/model.glb';
+import audioPath from './assets/audio.mp3';
 
 // Create a scene
 const scene = new THREE.Scene();
@@ -38,6 +39,11 @@ loader.load(modelPath, (gltf) => {
   model.position.set(0, 1, 0);
   model.scale.set(0.1,0.1,0.1); // Set model position
   scene.add(model);
+});
+
+const audio = new Audio(audioPath);
+document.addEventListener('click', () => {
+  audio.play();
 });
 
 // Animation loop

@@ -76,22 +76,22 @@ let mixer = null;
 gltfLoader.load(
     fox,
     (gltf) => {
-        console.log(gltf);
-
         mixer = new THREE.AnimationMixer(gltf.scene);
-        // You can change animations by passing the index values into gltf.animations
         const action = mixer.clipAction(gltf.animations[1]);
-
         action.play();
-
-        console.log(action);
 
         // Fixing scale problems
         gltf.scene.scale.set(0.025, 0.025, 0.025);
-        gltf.castShadow = true;
+
+        gltf.scene.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true; // Ensure the model and its children cast shadows
+            }
+        });
+
         scene.add(gltf.scene);
     }
-)
+);
 
 /**
  * Floor

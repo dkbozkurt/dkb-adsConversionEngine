@@ -9,6 +9,7 @@ export default defineConfig({
     },
     target: 'esnext',
     inlineDynamicImports: true,
+    assetsInlineLimit: 0, // Ensure all assets are inlined
   },
-  assetsInclude: ['**/*.glb', '**/*.mp3','**/*.ttf'],
+  assetsInclude: ['**/*.glb', '**/*.mp3', '**/*.png'],
 });

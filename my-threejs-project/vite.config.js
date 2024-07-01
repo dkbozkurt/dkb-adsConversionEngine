@@ -10,5 +10,5 @@ export default defineConfig({
     target: 'esnext',
     inlineDynamicImports: true,
   },
-  assetsInclude: ['**/*.glb', '**/*.mp3'],
+  assetsInclude: ['**/*.glb', '**/*.mp3','**/*.ttf'],
 });

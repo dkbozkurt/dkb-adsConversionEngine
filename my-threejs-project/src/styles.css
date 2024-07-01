@@ -1,0 +1,24 @@
+@font-face {
+    font-family: 'MyCustomFont';
+    src: url('./assets/my-font.ttf') format('truetype');
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000;
+  }
+  
+  #text {
+    font-family: 'MyCustomFont', sans-serif;
+    font-size: 24px;
+    color: white;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
+  
